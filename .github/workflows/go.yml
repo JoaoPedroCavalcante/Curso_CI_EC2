@@ -10,16 +10,35 @@ jobs:
 
   test:
     runs-on: ${{ matrix.os }}
+    
+    # Configuração do PostgreSQL como serviço do GitHub Actions
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: root
+          POSTGRES_DB: root
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
     env:
       HOST: localhost
       DBPORT: 5432
       USER: root
       PASSWORD: root
       DBNAME: root
+      
     strategy:
       matrix:
         go_version: ['1.18', '1.17', '>=1.18']
         os: ['ubuntu-latest', 'ubuntu-18.04']
+        
     steps:
     - uses: actions/checkout@v3
 
@@ -27,16 +46,6 @@ jobs:
       uses: actions/setup-go@v3
       with:
         go-version: ${{ matrix.go_version }}
-      
-    - name: Build-DB
-      run: docker compose build
-      
-    - name: Create-DB
-      run: docker compose up -d
-
-    - name: Wait for DB to be ready
-      run: |
-        timeout 90s bash -c 'until docker exec $(docker ps -q -f name=postgres) pg_isready -U root; do sleep 2; done'
 
     - name: Test
       run: go test -v main_test.go 
@@ -47,15 +56,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    
     - name: Build
       run: go build -v main.go
       
     - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v3.1.0
+      uses: actions/upload-artifact@v3. 1.0
       with:
-    # Artifact name
         name: programa
-    # A file, directory or wildcard pattern that describes what to upload
         path: main
 
 
@@ -68,4 +76,3 @@ jobs:
     needs: build
     uses: ./.github/workflows/EC2.yml
     secrets: inherit
-
