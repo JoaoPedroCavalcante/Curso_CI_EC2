@@ -35,7 +35,7 @@ jobs:
       
     strategy:
       matrix:
-        go_version: ['1. 18', '1.17']
+        go_version: ['1.18', '1.17']
         os: ['ubuntu-latest']
         
     steps:
@@ -68,10 +68,10 @@ jobs:
 
   docker:
     needs: build
-    uses: ./.github/workflows/Docker. yml
+    uses: ./.github/workflows/Docker.yml
     secrets: inherit
 
   Deploy_EC2:
     needs: build
-    uses: ./. github/workflows/EC2.yml
+    uses: ./.github/workflows/EC2. yml
     secrets: inherit
