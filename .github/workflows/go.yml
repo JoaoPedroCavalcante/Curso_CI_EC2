@@ -35,7 +35,8 @@ jobs:
       run: docker compose up -d
 
     - name: Wait for DB to be ready
-      run: sleep 15
+      run: |
+        timeout 90s bash -c 'until docker exec $(docker ps -q -f name=postgres) pg_isready -U root; do sleep 2; done'
 
     - name: Test
       run: go test -v main_test.go 
