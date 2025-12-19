@@ -32,14 +32,18 @@ jobs:
           port: 22
           script: |
             cd /home/ec2-user
-
+      
             export DBHOST=${{ secrets.DBHOST }}
             export DBUSER=${{ secrets.DBUSER }}
             export DBPASSWORD=${{ secrets.DBPASSWORD }}
             export DBNAME=${{ secrets.DBNAME }}
             export DBPORT=${{ secrets.PORT }}
             export PORT=8000
-
+      
             chmod +x main
             pkill -f "./main" || true
-            nohup ./main > app.log 2>&1 &
+      
+            nohup ./main > app.log 2>&1 < /dev/null &
+            disown
+      
+            exit 0
