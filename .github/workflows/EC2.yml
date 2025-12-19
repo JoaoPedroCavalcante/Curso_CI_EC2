@@ -13,7 +13,17 @@ jobs:
         with:
           name: programa
 
-      - name: Deploy and run application on EC2
+      - name: Copy binary to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          source: "main"
+          target: "/home/ec2-user"
+
+      - name: Run application on EC2
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.REMOTE_HOST }}
@@ -23,20 +33,13 @@ jobs:
           script: |
             cd /home/ec2-user
 
-            # Variáveis de ambiente do banco
             export DBHOST=${{ secrets.DBHOST }}
             export DBUSER=${{ secrets.DBUSER }}
             export DBPASSWORD=${{ secrets.DBPASSWORD }}
             export DBNAME=${{ secrets.DBNAME }}
             export DBPORT=${{ secrets.PORT }}
-
-            # Porta da aplicação
             export PORT=8000
 
             chmod +x main
-
-            # Mata processo antigo se existir
             pkill -f "./main" || true
-
-            # Sobe a aplicação
             nohup ./main > app.log 2>&1 &
