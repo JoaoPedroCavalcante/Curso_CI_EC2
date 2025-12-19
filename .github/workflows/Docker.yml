@@ -30,4 +30,4 @@ jobs:
         context: . 
         file: ./Dockerfile
         push: true
-        tags: joaopedrocavalcante/go_ci:${{ env.IMAGE_TAG }}
+        tags: joaopedrocavalcante/go_ci:latest
